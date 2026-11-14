@@ -1,0 +1,794 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <iomanip>
+using namespace std;
+
+// =====================================
+// CLASS 1: PERSON (BASE CLASS)
+// =====================================
+
+class Person
+{
+protected:
+    string name;
+    int age;
+
+public:
+
+    Person()
+    {
+        name = "Unknown";
+        age = 0;
+    }
+
+    Person(string n, int a)
+    {
+        name = n;
+        age = a;
+    }
+
+    virtual void display()
+    {
+        cout << "Name: " << name << endl;
+        cout << "Age: " << age << endl;
+    }
+
+    virtual ~Person()
+    {
+    }
+};
+
+
+// =====================================
+// CLASS 2: DETECTIVE
+// =====================================
+
+class Detective : public Person
+{
+private:
+    int score;
+    int lives;
+
+    static int totalCasesSolved;
+
+public:
+
+    Detective()
+    {
+        score = 0;
+        lives = 3;
+    }
+
+    void registerDetective()
+    {
+        cout << "\nEnter Detective Name: ";
+        getline(cin, name);
+
+        cout << "Enter Age: ";
+        cin >> age;
+        cin.ignore();
+
+        cout << "\nDetective Registered Successfully!\n";
+    }
+
+    void addScore(int points)
+    {
+        score += points;
+    }
+
+    void loseLife()
+    {
+        lives--;
+    }
+
+    int getScore()
+    {
+        return score;
+    }
+
+    int getLives()
+    {
+        return lives;
+    }
+
+    void caseSolved()
+    {
+        totalCasesSolved++;
+    }
+
+    static int getTotalCases()
+    {
+        return totalCasesSolved;
+    }
+
+    void display() override
+    {
+        cout << "\nDETECTIVE PROFILE\n";
+        cout << "Name: " << name << endl;
+        cout << "Age: " << age << endl;
+        cout << "Score: " << score << endl;
+        cout << "Lives: " << lives << endl;
+    }
+};
+
+int Detective::totalCasesSolved = 0;
+
+
+// =====================================
+// CLASS 3: SUSPECT
+// =====================================
+
+class Suspect : public Person
+{
+private:
+    string occupation;
+    string statement;
+    bool guilty;
+
+public:
+
+    Suspect()
+    {
+        occupation = "Unknown";
+        statement = "No statement";
+        guilty = false;
+    }
+
+    void setSuspect(string n, int a,
+                    string o, string s, bool g)
+    {
+        name = n;
+        age = a;
+        occupation = o;
+        statement = s;
+        guilty = g;
+    }
+
+    void display() override
+    {
+        cout << "\nSuspect Name: " << name << endl;
+        cout << "Age: " << age << endl;
+        cout << "Occupation: " << occupation << endl;
+    }
+
+    void interrogate()
+    {
+        cout << "\nQuestioning " << name << "...\n";
+        cout << "Statement: " << statement << endl;
+    }
+
+    bool isGuilty()
+    {
+        return guilty;
+    }
+
+    string getName()
+    {
+        return name;
+    }
+};
+
+
+// =====================================
+// CLASS 4: MYSTERY CASE
+// =====================================
+
+class MysteryCase
+{
+private:
+    string caseName;
+    string location;
+    string description;
+    string clues[3];
+    string hint;
+    string criminal;
+    int caseID;
+
+public:
+
+    MysteryCase()
+    {
+        caseID = 0;
+    }
+
+    void setCase(int id, string n,
+                 string l, string d,
+                 string h, string c)
+    {
+        caseID = id;
+        caseName = n;
+        location = l;
+        description = d;
+        hint = h;
+        criminal = c;
+    }
+
+    void setClue(int index, string clue)
+    {
+        if(index >= 0 && index < 3)
+        {
+            clues[index] = clue;
+        }
+    }
+
+    void displayCase()
+    {
+        cout << "\n================================\n";
+        cout << "CASE " << caseID << ": " << caseName;
+        cout << "\n================================\n";
+
+        cout << "Location: " << location << endl;
+        cout << "Description: " << description << endl;
+    }
+
+    void investigateClues()
+    {
+        cout << "\n========== EVIDENCE ==========\n";
+
+        for(int i = 0; i < 3; i++)
+        {
+            cout << "\nClue " << i + 1 << ": ";
+            cout << clues[i] << endl;
+        }
+    }
+
+    void showHint()
+    {
+        cout << "\nDETECTIVE HINT: " << hint << endl;
+    }
+
+    string getCriminal()
+    {
+        return criminal;
+    }
+
+    string getCaseName()
+    {
+        return caseName;
+    }
+};
+
+
+// =====================================
+// CLASS 5: INVESTIGATION
+// =====================================
+
+class Investigation
+{
+private:
+    int cluesFound;
+    int hintsUsed;
+
+public:
+
+    Investigation()
+    {
+        cluesFound = 0;
+        hintsUsed = 0;
+    }
+
+    void investigate()
+    {
+        cluesFound++;
+
+        cout << "\nEvidence successfully collected!\n";
+    }
+
+    void investigate(string place)
+    {
+        cout << "\nInvestigating location: "
+             << place << endl;
+
+        cluesFound++;
+    }
+
+    void useHint()
+    {
+        hintsUsed++;
+
+        cout << "\nHint activated!\n";
+    }
+
+    int getClues()
+    {
+        return cluesFound;
+    }
+
+    int getHints()
+    {
+        return hintsUsed;
+    }
+
+    void reset()
+    {
+        cluesFound = 0;
+        hintsUsed = 0;
+    }
+};
+
+
+// =====================================
+// CLASS 6: DETECTIVE GAME
+// =====================================
+
+class DetectiveGame
+{
+private:
+
+    Detective detective;
+
+    MysteryCase cases[3];
+
+    Suspect suspects[3][3];
+
+    Investigation investigation;
+
+    bool caseCompleted[3];
+
+public:
+
+    // CONSTRUCTOR
+
+    DetectiveGame()
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            caseCompleted[i] = false;
+        }
+
+        setupCases();
+    }
+
+
+    // SETUP CASES
+
+    void setupCases()
+    {
+        cases[0].setCase(
+        1,
+        "The Missing Diamond",
+        "City Museum",
+        "A valuable diamond disappeared from the museum.",
+        "Look carefully at the security room.",
+        "Ahmed");
+
+        cases[0].setClue(0,
+        "A broken glass piece was found.");
+
+        cases[0].setClue(1,
+        "A muddy footprint was discovered.");
+
+        cases[0].setClue(2,
+        "Ahmed was seen near the security room.");
+
+
+        cases[1].setCase(
+        2,
+        "The Office Murder",
+        "Corporate Office",
+        "The manager was found dead in his office.",
+        "Check who had access to the office.",
+        "Sara");
+
+        cases[1].setClue(0,
+        "A coffee cup was found.");
+
+        cases[1].setClue(1,
+        "A suspicious email was discovered.");
+
+        cases[1].setClue(2,
+        "Sara had access to the office.");
+
+
+        cases[2].setCase(
+        3,
+        "The Stolen Necklace",
+        "Royal Hotel",
+        "A diamond necklace was stolen during a party.",
+        "Investigate the hotel staff.",
+        "Ali");
+
+        cases[2].setClue(0,
+        "A glove was found near the room.");
+
+        cases[2].setClue(1,
+        "The room key was missing.");
+
+        cases[2].setClue(2,
+        "Ali was seen near the room.");
+        
+
+        // CASE 1 SUSPECTS
+
+        suspects[0][0].setSuspect(
+        "Ali", 28, "Teacher",
+        "I was in the library.", false);
+
+        suspects[0][1].setSuspect(
+        "Ahmed", 32, "Security Guard",
+        "I was checking the security room.", true);
+
+        suspects[0][2].setSuspect(
+        "Sara", 25, "Artist",
+        "I was painting in the gallery.", false);
+
+
+        // CASE 2 SUSPECTS
+
+        suspects[1][0].setSuspect(
+        "John", 35, "Accountant",
+        "I was working on accounts.", false);
+
+        suspects[1][1].setSuspect(
+        "Sara", 29, "Assistant",
+        "I was inside the manager's office.", true);
+
+        suspects[1][2].setSuspect(
+        "David", 40, "Manager",
+        "I was attending a meeting.", false);
+
+
+        // CASE 3 SUSPECTS
+
+        suspects[2][0].setSuspect(
+        "Ali", 30, "Hotel Staff",
+        "I was cleaning the hallway.", true);
+
+        suspects[2][1].setSuspect(
+        "Maria", 26, "Guest",
+        "I was attending the party.", false);
+
+        suspects[2][2].setSuspect(
+        "Hamza", 34, "Chef",
+        "I was preparing dinner.", false);
+    }
+
+
+    // GAME INTRODUCTION
+
+    void introduction()
+    {
+        cout << "\n";
+        cout << "************************************\n";
+        cout << "*                                  *\n";
+        cout << "*     DETECTIVE MYSTERY GAME       *\n";
+        cout << "*                                  *\n";
+        cout << "************************************\n";
+
+        cout << "\nWelcome to the Detective Department!\n";
+
+        cout << "Your mission is to solve mysterious cases.\n";
+
+        detective.registerDetective();
+    }
+
+
+    // MAIN MENU
+
+    void mainMenu()
+    {
+        int choice;
+
+        do
+        {
+            cout << "\n\n================================\n";
+            cout << "          MAIN MENU";
+            cout << "\n================================\n";
+
+            cout << "1. View Detective Profile\n";
+            cout << "2. Start Investigation\n";
+            cout << "3. View Total Cases Solved\n";
+            cout << "4. Exit Game\n";
+
+            cout << "\nEnter Choice: ";
+            cin >> choice;
+
+            switch(choice)
+            {
+                case 1:
+                    detective.display();
+                    break;
+
+                case 2:
+                    selectCase();
+                    break;
+
+                case 3:
+                    cout << "\nCases Solved: "
+                         << Detective::getTotalCases();
+                    break;
+
+                case 4:
+                    cout << "\nThank you Detective!\n";
+                    break;
+
+                default:
+                    cout << "\nInvalid Choice!\n";
+            }
+
+        } while(choice != 4);
+    }
+
+
+    // SELECT CASE
+
+    void selectCase()
+    {
+        int choice;
+
+        cout << "\n========== AVAILABLE CASES ==========\n";
+
+        for(int i = 0; i < 3; i++)
+        {
+            cout << i + 1 << ". "
+                 << cases[i].getCaseName();
+
+            if(caseCompleted[i])
+            {
+                cout << " [SOLVED]";
+            }
+
+            cout << endl;
+        }
+
+        cout << "Select Case: ";
+        cin >> choice;
+
+        if(choice < 1 || choice > 3)
+        {
+            cout << "\nInvalid Case!\n";
+            return;
+        }
+
+        if(caseCompleted[choice - 1])
+        {
+            cout << "\nThis case is already solved!\n";
+            return;
+        }
+
+        investigation.reset();
+
+        startInvestigation(choice - 1);
+    }
+
+
+    // START INVESTIGATION
+
+    void startInvestigation(int index)
+    {
+        int choice;
+
+        cases[index].displayCase();
+
+        do
+        {
+            cout << "\n========== INVESTIGATION MENU ==========\n";
+
+            cout << "1. Collect Evidence\n";
+            cout << "2. View Suspects\n";
+            cout << "3. Interrogate Suspects\n";
+            cout << "4. Get Hint\n";
+            cout << "5. Accuse Criminal\n";
+            cout << "6. Return to Main Menu\n";
+
+            cout << "\nLives: "
+                 << detective.getLives();
+
+            cout << "\nScore: "
+                 << detective.getScore();
+
+            cout << "\nEnter Choice: ";
+
+            cin >> choice;
+
+            switch(choice)
+            {
+                case 1:
+                    collectEvidence(index);
+                    break;
+
+                case 2:
+                    displaySuspects(index);
+                    break;
+
+                case 3:
+                    interrogateSuspects(index);
+                    break;
+
+                case 4:
+                    cases[index].showHint();
+                    investigation.useHint();
+                    break;
+
+                case 5:
+                    solveCase(index);
+                    return;
+
+                case 6:
+                    cout << "\nReturning to Main Menu...\n";
+                    break;
+
+                default:
+                    cout << "\nInvalid Choice!\n";
+            }
+
+            if(detective.getLives() <= 0)
+            {
+                cout << "\nGAME OVER!\n";
+                return;
+            }
+
+        } while(choice != 6);
+    }
+
+
+    // COLLECT EVIDENCE
+
+    void collectEvidence(int index)
+    {
+        cases[index].investigateClues();
+
+        investigation.investigate();
+
+        detective.addScore(10);
+
+        cout << "\n10 Points Added!\n";
+    }
+
+
+    // DISPLAY SUSPECTS
+
+    void displaySuspects(int index)
+    {
+        cout << "\n========== SUSPECT LIST ==========\n";
+
+        for(int i = 0; i < 3; i++)
+        {
+            cout << "\nSuspect " << i + 1;
+
+            suspects[index][i].display();
+        }
+    }
+
+
+    // INTERROGATION
+
+    void interrogateSuspects(int index)
+    {
+        int choice;
+
+        cout << "\nSelect Suspect to Interrogate:\n";
+
+        for(int i = 0; i < 3; i++)
+        {
+            cout << i + 1 << ". "
+                 << suspects[index][i].getName()
+                 << endl;
+        }
+
+        cout << "\nEnter Choice: ";
+        cin >> choice;
+
+        if(choice >= 1 && choice <= 3)
+        {
+            suspects[index][choice - 1].interrogate();
+
+            detective.addScore(5);
+
+            cout << "\n5 Investigation Points Added!\n";
+        }
+
+        else
+        {
+            cout << "\nInvalid Suspect!\n";
+        }
+    }
+
+
+    // SOLVE CASE
+
+    void solveCase(int index)
+    {
+        string answer;
+
+        cout << "\nWho is the criminal?\n";
+
+        cout << "Enter Suspect Name: ";
+
+        cin >> answer;
+
+        if(answer == cases[index].getCriminal())
+        {
+            cout << "\n********************************\n";
+
+            cout << "       CASE SOLVED!\n";
+
+            cout << "********************************\n";
+
+            cout << "\nExcellent Investigation!\n";
+
+            detective.addScore(50);
+
+            detective.caseSolved();
+
+            caseCompleted[index] = true;
+
+            cout << "\n50 Bonus Points Added!\n";
+        }
+
+        else
+        {
+            cout << "\nWRONG ACCUSATION!\n";
+
+            cout << "The criminal is still free.\n";
+
+            detective.loseLife();
+
+            cout << "\nOne Life Lost!\n";
+        }
+    }
+
+
+    // FINAL REPORT
+
+    void finalReport()
+    {
+        cout << "\n\n********************************\n";
+
+        cout << "       DETECTIVE REPORT\n";
+
+        cout << "********************************\n";
+
+        detective.display();
+
+        cout << "\nTotal Cases Solved: "
+             << Detective::getTotalCases();
+
+        cout << "\n\nPerformance: ";
+
+        if(detective.getScore() >= 150)
+        {
+            cout << "MASTER DETECTIVE";
+        }
+
+        else if(detective.getScore() >= 70)
+        {
+            cout << "PROFESSIONAL DETECTIVE";
+        }
+
+        else
+        {
+            cout << "JUNIOR DETECTIVE";
+        }
+
+        cout << "\n\nThank You For Playing!\n";
+    }
+
+
+    // RUN GAME
+
+    void run()
+    {
+        introduction();
+
+        mainMenu();
+
+        finalReport();
+    }
+
+};
+
+
+// =====================================
+// MAIN FUNCTION
+// =====================================
+
+int main()
+{
+    DetectiveGame game;
+
+    game.run();
+
+    return 0;
+}
